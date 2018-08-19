@@ -195,9 +195,11 @@ std::vector<TopoDS_Shape> DrawViewPart::getShapesFromObject(App::DocumentObject*
     App::GroupExtension* gex = dynamic_cast<App::GroupExtension*>(docObj);
     if (docObj->getTypeId().isDerivedFrom(Part::Feature::getClassTypeId())) {
         Part::Feature* pf = static_cast<Part::Feature*>(docObj);
-        Part::TopoShape ts = pf->Shape.getShape();
-        ts.setPlacement(pf->globalPlacement());
-        result.push_back(ts.getShape());
+        Part::TopoShape ts = Part::Feature::getTopoShape(pf);
+        if (!ts.isNull()) {
+            ts.setPlacement(pf->globalPlacement());
+            result.push_back(ts.getShape());
+        }
     } else if (gex != nullptr) {
         std::vector<App::DocumentObject*> objs = gex->Group.getValues();
         std::vector<TopoDS_Shape> shapes;
